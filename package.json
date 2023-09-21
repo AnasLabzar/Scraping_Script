@@ -1,0 +1,20 @@
+{
+  "name": "scraping-script---guillam",
+  "version": "1.0.0",
+  "description": "a web scraper",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Anas Labzar",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^21.3.0",
+    "vercel": "^32.3.0",
+    "yarn": "^1.22.19"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.38.0",
+    "@types/node": "^20.6.2"
+  }
+}
