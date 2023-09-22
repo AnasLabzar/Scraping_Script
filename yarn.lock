@@ -553,6 +553,14 @@ chromium-bidi@0.4.27:
     mitt "3.0.1"
     urlpattern-polyfill "9.0.0"
 
+chromium-bidi@0.4.28:
+  version "0.4.28"
+  resolved "https://registry.npmjs.org/chromium-bidi/-/chromium-bidi-0.4.28.tgz"
+  integrity sha512-2HZ74QlAApJrEwcGlU/sUu0s4VS+FI3CJ09Toc9aE9VemMyhHZXeaROQgJKNRaYMUTUx6qIv1cLBs3F+vfgjSw==
+  dependencies:
+    mitt "3.0.1"
+    urlpattern-polyfill "9.0.0"
+
 cliui@^8.0.1:
   version "8.0.1"
   resolved "https://registry.npmjs.org/cliui/-/cliui-8.0.1.tgz"
@@ -1392,6 +1400,18 @@ punycode@^2.1.0:
   resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.0.tgz"
   integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
 
+puppeteer-core@^21.3.4:
+  version "21.3.4"
+  resolved "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-21.3.4.tgz"
+  integrity sha512-iaG7ScTXOm9hlsBTBGGtr5dAAsA8IiWTx8E0Ghr0b5Ntl42bdcPS8EXjcERKocDhua2YqdlnFGs/cBxHY+VNyA==
+  dependencies:
+    "@puppeteer/browsers" "1.7.1"
+    chromium-bidi "0.4.28"
+    cross-fetch "4.0.0"
+    debug "4.3.4"
+    devtools-protocol "0.0.1179426"
+    ws "8.14.2"
+
 puppeteer-core@21.3.0:
   version "21.3.0"
   resolved "https://registry.npmjs.org/puppeteer-core/-/puppeteer-core-21.3.0.tgz"
@@ -1780,6 +1800,11 @@ ws@8.14.1:
   version "8.14.1"
   resolved "https://registry.npmjs.org/ws/-/ws-8.14.1.tgz"
   integrity sha512-4OOseMUq8AzRBI/7SLMUwO+FEDnguetSk7KMb1sHwvF2w2Wv5Hoj0nlifx8vtGsftE/jWHojPy8sMMzYLJ2G/A==
+
+ws@8.14.2:
+  version "8.14.2"
+  resolved "https://registry.npmjs.org/ws/-/ws-8.14.2.tgz"
+  integrity sha512-wEBG1ftX4jcglPxgFCMJmZ2PLtSbJ2Peg6TmpJFTbe9GZYOQCDPdMYu/Tm0/bGZkw8paZnJY45J4K2PZrLYq8g==
 
 y18n@^5.0.5:
   version "5.0.8"
