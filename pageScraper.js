@@ -1,211 +1,161 @@
 const processedCodes = new Set(); // Use a Set to track processed codes
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', reason.stack || reason);
-});
-
+const reopenCodes = new Set(); // Use a Set to track processed codes
 
 const scraperObject = {
-  url: 'https://www.key-2702.com/-back-office/commande.php',
-  page: null, // Global variable to store the page reference
-  async scraper(browser) {
-    this.page = await browser.newPage();
-    console.log(`Navigating to ${this.url}...`);
+    url: 'https://www.key-2702.com/-back-office/commande.php',
+    async scraper(browser) {
+        let page = await browser.newPage();
+        let EmailLogin = "guillaumebigot12@gmail.com";
+        let PswLogin = "123456";
 
-    let EmailLogin = "guillaumebigot12@gmail.com";
-    let PswLogin = "123456";
+        await page.goto(this.url);
+        console.log(`Navigating to ${this.url}...`);
 
-    try {
-      // Navigate to the login page
-      await this.page.goto(this.url);
-
-      // Check if the URL is redirected to "command.php"
-      if (this.page.url().includes('commande.php')) {
-        console.log('Already on the desired page. No need to log in.');
-      } else {
-        // Perform login if not redirected
-        await this.page.waitForTimeout(1000); // 1-second delay
-
-        await this.page.type('input[type="email"]', EmailLogin);
-
-        // Wait for the page to load
-        await this.page.waitForTimeout(400); // 1-second delay
-
-        await this.page.type('input[type="password"]', PswLogin);
-
-        // Click the "detail" button
-        await this.page.keyboard.press('Enter');
-
-        await this.page.waitForTimeout(15000); // 15-second delay
-
-        try {
-          // Wait for navigation to accueil.php
-          await this.page.waitForNavigation({ url: 'https://www.key-2702.com/-back-office/accueil.php' });
-          console.log("hello1");
-        } catch (error) {
-          console.log("Sorry! The 15-second timeout for navigation to accueil.php has expired.");
-          throw error; // Rethrow the error to stop processing
-        }
-      }
-
-      await this.page.waitForSelector('a[href="commande.php"]');
-      console.log("hello2");
-
-      await this.page.waitForTimeout(500);
-
-      await this.page.evaluate(() => {
-        const commandeLink = document.querySelector('a[href="commande.php"]');
-        if (commandeLink) {
-          commandeLink.click();
+        // Check if the URL is redirected to "command.php"
+        if (page.url().includes('commande.php')) {
+            console.log('Already on the desired page. No need to log in.');
         } else {
-          console.log("le click de redirection c'est pas marche");
-          throw new Error("Clicking redirection link failed."); // Throw an error to skip processing
-        }
-      });
+            // Perform login if not redirected
+            await page.waitForTimeout(1000); // 1-second delay
 
-      await this.page.waitForTimeout(2000);
-      console.log("test1");
+            await page.type('input[type="email"]', EmailLogin);
 
-      await processData(); // Start processing initially
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-    }
+            // Wait for the page to load
+            await page.waitForTimeout(400); // 1-second delay
 
-    async function processData() {
-      const accordionButtons = await scraperObject.page.$$('.accordion-button');
-      console.log("accordionButtons");
-    
-      for (const accordionButton of accordionButtons) {
-        try {
-          console.log("test111");
-          await accordionButton.click();
-          await scraperObject.page.waitForTimeout(1000);
-    
-          await scraperObject.page.waitForSelector('table tbody tr');
-          console.log("test3");
-    
-          const rows = await scraperObject.page.$$('table tbody tr');
-          console.log("test4");
-    
-          // await scraperObject.page.waitForTimeout(1000);
-    
-          for (const row of rows) {
+            await page.type('input[type="password"]', PswLogin);
+
+            // Click the "detail" button
+            await page.keyboard.press('Enter');
+
+            await page.waitForTimeout(15000); // 15-second delay
+
             try {
-              console.log("test5");
-    
-              const columns = await row.$$('td');
-              await scraperObject.page.waitForTimeout(1000);
-    
-              console.log("test6");
-    
-              const codeColumn = columns[0]; // Assuming the code is in the first column
-              await scraperObject.page.waitForTimeout(1000);
-    
-              const code = await codeColumn.evaluate(element => element.textContent.trim());
-    
-              if (!processedCodes.has(code)) {
-                const secondColumnText = await columns[1].evaluate(element => element.textContent);
-                await scraperObject.page.waitForTimeout(1000);
-    
-                if (secondColumnText.includes('KENDO-TEST')) {
-                  console.log("is just a test technique");
-                } else {
-                  const buttons = await row.$$('td:last-child a');
-                  if (buttons.length >= 0) {
-                    console.log("test7");
-    
-                    const newPage = await scraperObject.page.browser().newPage();
-                    const link = await buttons[0].evaluate(link => link.href);
-    
-                    await newPage.goto(link);
-                    await scraperObject.page.waitForTimeout(1000);
-    
-                    console.log(`Scraping data from page: ${link}`);
-    
-                    const vertiTimelineCount = await newPage.$$eval('.verti-timeline li', (elements) => elements.length);
-                    console.log("test9");
-                    await scraperObject.page.waitForTimeout(1000);
-    
-    
-                    if (vertiTimelineCount === 1) {
-                      console.log("test10");
-                      await newPage.click('#order-check');
-                      await scraperObject.page.waitForTimeout(1000);
-    
-                      console.log("test11");
-                      await newPage.waitForSelector('.confirmation_check');
-                      console.log("test12");
-                      const checkboxes = await newPage.$$('.confirmation_check');
-                      console.log("test13");
-                      await scraperObject.page.waitForTimeout(1000);
-    
-                      for (const checkbox of checkboxes) {
-                        await checkbox.click();
-                        await scraperObject.page.waitForTimeout(1000);
-    
-                      }
-    
-                      console.log("test14");
-                    }
-    
-                    // await scraperObject.page.waitForTimeout(500);
-                    await newPage.close();
-                    console.log("Finished processing current row.");
-                    processedCodes.add(code); // Add the processed code to the Set
-                  }
-                }
-              } else {
-                console.log(`Skipping row with code ${code} as it has already been processed.`);
-              }
+                // Wait for navigation to accueil.php
+                await page.waitForNavigation({ url: 'https://www.key-2702.com/-back-office/accueil.php' });
             } catch (error) {
-              console.error(`Error in row processing: ${error.message}`);
+                console.log("Sorry! The 15-second timeout for navigation to accueil.php has expired.");
+                throw error; // Rethrow the error to stop processing
             }
-            await scraperObject.page.waitForTimeout(2000);
-    
-          }
-    
-          console.log('Finished processing accordion button.');
-        } catch (error) {
-          console.error(`Error in accordion button processing: ${error.message}`);
         }
-    
-      }
-    
-      console.log('All accordion buttons have been processed.');
-      startCheckingForData();
-      await scraperObject.page.waitForTimeout(3000);
-    }
-    
-    
-    async function startCheckingForData() {
-      let pageRefreshCount = 0; // Initialize page refresh counter
-      const maxRefreshCount = 10; // Specify the maximum number of page refreshes before processing
-    
-      console.log('Starting periodic data check...');
-      while (true) {
-        // await scraperObject.page.waitForTimeout(2000);
-        await scraperObject.page.reload();
-        console.log('Refreshing the page and checking for new data...');
-    
-        // Increment the refresh counter
-        pageRefreshCount++;
-        await scraperObject.page.waitForTimeout(1000);
-    
-    
-        if (pageRefreshCount >= maxRefreshCount) {
-          // Reset the refresh counter
-          pageRefreshCount = 0;
-          await scraperObject.page.waitForTimeout(10000); // 10-second delay
-          console.log(`Maximum refresh count reached. Waiting for 3 seconds...`);
-        } else {
-          await scraperObject.page.waitForTimeout(1000); // 1-second delay
-        }
-    
-        await processData();
-      }
-    }
-  }
-};
 
+        await page.waitForSelector('a[href="commande.php"]');
+        await page.waitForTimeout(500);
+
+        await page.evaluate(() => {
+            let commandeLink = document.querySelector('a[href="commande.php"]');
+            if (commandeLink) {
+                commandeLink.click();
+            } else {
+                console.log("le click de redirection c'est pas marche");
+                throw new Error("Clicking redirection link failed.");
+            }
+        });
+
+        await page.waitForTimeout(2000);
+
+        async function scrapeCurrentPage() {
+            console.log("T1");
+            await page.waitForSelector('table tbody tr');
+            console.log("T2");
+            let urls = await page.$$eval('table tbody tr', links => {
+                console.log("T3");
+                // Extract the links from the data
+                links = links.map(el => el.querySelector('td:last-child a').href);
+                console.log("T4");
+                return links;
+            });
+            console.log("T5");
+
+            console.log(urls);
+
+            // Loop through each of those links, open a new page instance and get the relevant data from them
+            console.log("T6");
+            for (let link of urls) {
+                console.log("T7");
+                const code = extractCodeFromLink(link); // Extract code from the link
+                console.log("T8");
+                
+                if (code !== null && !processedCodes.has(code) || reopenCodes.has(code)) {
+                    console.log("Processing link with code:", code);
+                    let currentPageData = await pagePromise(link, code);
+                    console.log("T8");
+                    console.log(currentPageData);
+                } else {
+                    console.log("Skipping link with code:", code);
+                }
+            }
+
+            console.log("T9");
+            await page.reload();
+            return scrapeCurrentPage();
+        }
+
+        async function pagePromise(link, code) {
+            console.log("T10");
+            let newPage = await browser.newPage();
+            console.log("T11");
+            await newPage.goto(link);
+            console.log("T12");
+
+            const vertiTimelineCount = await newPage.$$eval('.verti-timeline li', (elements) => elements.length);
+
+            if (vertiTimelineCount === 1) {
+                // Re-open the file if vertiTimelineCount is 1
+                console.log("Re-opening the file due to vertiTimelineCount === 1");
+                await newPage.goto(link); // Re-open the page
+                await newPage.click('#order-check');
+                await newPage.waitForSelector('.confirmation_check');
+
+                const checkboxes = await newPage.$$('.confirmation_check');
+
+                for (const checkbox of checkboxes) {
+                    await checkbox.click();
+                }
+                
+                reopenCodes.add(code);
+            }
+            processedCodes.add(code);
+            console.log("T13");
+            // Close the new page
+            await newPage.close();
+        }
+        console.log("T14");
+
+        function extractCodeFromLink(link) {
+            const regex = /customer=(\d+)/; // Regular expression to match "customer=12345"
+            const match = link.match(regex);
+            if (match) {
+                return match[1]; // Extracted code or ID
+            }
+            return null; // Return null if no match is found
+        }
+
+        let data = await scrapeCurrentPage();
+        console.log(data);
+        return data;
+    }
+}
 
 module.exports = scraperObject;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
