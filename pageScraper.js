@@ -2,17 +2,17 @@ const processedCodes = new Set(); // Use a Set to track processed codes
 const reopenCodes = new Set(); // Use a Set to track processed codes
 
 const scraperObject = {
-    url: 'https://www.key-2702.com/-back-office/commande.php',
+    url: 'YOUR_URL_HERE',
     async scraper(browser) {
         let page = await browser.newPage();
-        let EmailLogin = "guillaumebigot12@gmail.com";
-        let PswLogin = "123456";
+        let EmailLogin = "YOUR_MAIL_HERE";
+        let PswLogin = "YOUR_PASSWORD_HERE";
 
         await page.goto(this.url);
         console.log(`Navigating to ${this.url}...`);
 
         // Check if the URL is redirected to "command.php"
-        if (page.url().includes('commande.php')) {
+        if (page.url().includes('ex: //commande.php')) {
             console.log('Already on the desired page. No need to log in.');
         } else {
             // Perform login if not redirected
@@ -32,18 +32,18 @@ const scraperObject = {
 
             try {
                 // Wait for navigation to accueil.php
-                await page.waitForNavigation({ url: 'https://www.key-2702.com/-back-office/accueil.php' });
+                await page.waitForNavigation({ url: 'YOUR_URL/accueil' });
             } catch (error) {
-                console.log("Sorry! The 15-second timeout for navigation to accueil.php has expired.");
+                console.log("Sorry! The 15-second timeout for navigation to accueil has expired.");
                 throw error; // Rethrow the error to stop processing
             }
         }
 
-        await page.waitForSelector('a[href="commande.php"]');
+        await page.waitForSelector('a[href="YOUR_PAGE_URL"]');
         await page.waitForTimeout(500);
 
         await page.evaluate(() => {
-            let commandeLink = document.querySelector('a[href="commande.php"]');
+            let commandeLink = document.querySelector('a[href="YOUR_PAGE_URL.php"]');
             if (commandeLink) {
                 commandeLink.click();
             } else {
